@@ -7,9 +7,13 @@ import "ag-grid-community/styles/ag-theme-alpine.css";
 
 import { Blocks } from "react-loader-spinner";
 import dayjs from "dayjs";
+import { useLocation } from "react-router";
 
 const TableData = () => {
   const { RangePicker } = DatePicker;
+
+  const location=useLocation();
+  console.log("state",location.state);
 
 
   const [selectStartDate, setSelectStartDate] = useState(
@@ -103,8 +107,8 @@ const TableData = () => {
 
   const DateFetchData = async (selectStartDate, selectEndDate) => {
     setIsLoading(true);
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImFmMzNlMTEzLTI2ODgtNDQyNC05YjZkLWZkNjlhYzMwZDFiZSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6ImRlbnRhbEluZm90ZWNoQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOlsiRGVudGFsIFNvZnR3YXJlIiwiZGVudGFsSW5mb3RlY2hAZ21haWwuY29tIl0sImp0aSI6ImEyN2ExY2QzLTk3MzktNGZjYS1iMGI0LWYxNjA3NTQzNWQzNCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlN1cGVyIEFkbWluIiwiZXhwIjoxNjg5NzQ2NDkxLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo1MDAxIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMSJ9.WMjPhXcXG9ciiuR_6BMUq1PFoieS5Q-PGEhI27Rzmx8";
+    const token =location.state[0];
+   
     const apiUrl = `https://api.dentalbookingonline.com/api/Appointment/get-allappointments?id=66&startDate=${selectStartDate}&endDate=${selectEndDate}`;
     try {
       const response = await axios.get(apiUrl, {
