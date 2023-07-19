@@ -1,29 +1,26 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { DatePicker } from "antd";
-import axios from "axios";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-
+import axios from "axios";
+import { DatePicker } from "antd";
 import { Blocks } from "react-loader-spinner";
+import React, { useEffect, useState,useMemo } from "react";
 import dayjs from "dayjs";
 
-const TableData = () => {
+const NewTable = () => {
   const { RangePicker } = DatePicker;
 
-
-  const [selectStartDate, setSelectStartDate] = useState(
+  // creating startDate state with using dayJs date format
+  const [startDate, setStartDate] = useState(
     dayjs().startOf("month").format("YYYY-MM-DD")
   );
-  
-  const [selectEndDate, setSelectEndDate] = useState(
+  // creating endDate state with using dayJs date format
+  const [endDate, setEndDate] = useState(
     dayjs().endOf("month").format("YYYY-MM-DD")
   );
-  
-
+  // creating row data state with empty array
   const [rowData, setRowData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Ag Grid column Defs
   const [columnDefs] = useState([
     {
       headerName: "Appointment Type",
@@ -86,8 +83,14 @@ const TableData = () => {
       field: "startTime",
     },
   ]);
-  console.log("StartDate", selectStartDate);
-  console.log("EndDate", selectEndDate);
+
+  console.log("startDate", startDate);
+  console.log("endDate", endDate);
+
+  // when page isloading useEffect DateFetchData functuion
+  useEffect(() => {
+    DateFetchData(startDate, endDate);
+  }, [startDate, endDate]);
 
   const defaultColDef = useMemo(
     () => ({
@@ -96,21 +99,18 @@ const TableData = () => {
     }),
     []
   );
-
-  useEffect(() => {
-    DateFetchData(selectStartDate, selectEndDate);
-  }, [selectStartDate, selectEndDate]);
-
-  const DateFetchData = async (selectStartDate, selectEndDate) => {
+  // creating DateFetchData async function it's fetching API data with token
+  const DateFetchData = async (startDate, endDate) => {
     setIsLoading(true);
+    // token
     const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImFmMzNlMTEzLTI2ODgtNDQyNC05YjZkLWZkNjlhYzMwZDFiZSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6ImRlbnRhbEluZm90ZWNoQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOlsiRGVudGFsIFNvZnR3YXJlIiwiZGVudGFsSW5mb3RlY2hAZ21haWwuY29tIl0sImp0aSI6ImEyN2ExY2QzLTk3MzktNGZjYS1iMGI0LWYxNjA3NTQzNWQzNCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlN1cGVyIEFkbWluIiwiZXhwIjoxNjg5NzQ2NDkxLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo1MDAxIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMSJ9.WMjPhXcXG9ciiuR_6BMUq1PFoieS5Q-PGEhI27Rzmx8";
-    const apiUrl = `https://api.dentalbookingonline.com/api/Appointment/get-allappointments?id=66&startDate=${selectStartDate}&endDate=${selectEndDate}`;
+     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImFmMzNlMTEzLTI2ODgtNDQyNC05YjZkLWZkNjlhYzMwZDFiZSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6ImRlbnRhbEluZm90ZWNoQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOlsiRGVudGFsIFNvZnR3YXJlIiwiZGVudGFsSW5mb3RlY2hAZ21haWwuY29tIl0sImp0aSI6ImEyN2ExY2QzLTk3MzktNGZjYS1iMGI0LWYxNjA3NTQzNWQzNCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlN1cGVyIEFkbWluIiwiZXhwIjoxNjg5NzQ2NDkxLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo1MDAxIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMSJ9.WMjPhXcXG9ciiuR_6BMUq1PFoieS5Q-PGEhI27Rzmx8"
+      // API
+    const apiUrl = `https://api.dentalbookingonline.com/api/Appointment/get-allappointments?id=66&startDate=${startDate}&endDate=${endDate}`;
     try {
       const response = await axios.get(apiUrl, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
       });
 
@@ -120,23 +120,26 @@ const TableData = () => {
       console.log("Error fetching data:", error);
     }
   };
-const DatePikerChange=(date,dateString)=>{
-  console.log("change");
-  setSelectStartDate(dateString[0]);
-  setSelectEndDate(dateString[1]);
-}
+
+  // handleChange function
+  const handleChange = (date, dateString) => {
+    console.log("change");
+    setStartDate(dateString[0]);
+    setEndDate(dateString[1]);
+  };
+
   return (
     <>
       <div className="date" style={{ marginLeft: "10%" }}>
         <RangePicker
-          onChange={DatePikerChange}
+          onChange={handleChange}
           format="YYYY-MM-DD"
-          defaultValue={[dayjs(selectStartDate), dayjs(selectEndDate)]}
+          defaultValue={[dayjs(startDate), dayjs(endDate)]}
         />
       </div>
       <div className="grid-container">
         {isLoading ? (
-          <div style={{ textAlign: "center" ,marginTop:"10%" }}>
+          <div style={{ textAlign: "center", marginTop: "10%" }}>
             <Blocks
               visible={true}
               height="80"
@@ -148,14 +151,8 @@ const DatePikerChange=(date,dateString)=>{
           </div>
         ) : (
           <div style={{ height: "400px", width: "80%", marginLeft: "10%" }}>
-            <div style={{ height: "80vh" }} className="ag-theme-alpine">
-              <AgGridReact
-                rowData={rowData}
-                columnDefs={columnDefs}
-                defaultColDef={defaultColDef}
-                animateRows={true}
-                
-              />
+            <div style={{ height: 500 }} className="ag-theme-alpine">
+              <AgGridReact rowData={rowData} columnDefs={columnDefs} defaultColDef={defaultColDef}/>
             </div>
           </div>
         )}
@@ -164,4 +161,4 @@ const DatePikerChange=(date,dateString)=>{
   );
 };
 
-export default TableData;
+export default NewTable;
